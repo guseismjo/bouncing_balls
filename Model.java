@@ -61,15 +61,19 @@ class Model {
 		// Initialize the model with a few balls
 		
 
-		balls = new Ball[3];
+		balls = new Ball[2];
 		
 		balls[0] = new Ball(width / 3, height * 0.7, 0.7, 0.6, 0.3);
 		balls[1] = new Ball(2 * width / 3, height * 0.7, -0.8, 0.6, 0.3);
-		balls[2] = new Ball(2 * width / 4, height * 0.7, -0.8, 0.6, 0.3);
+		//balls[2] = new Ball(2 * width / 4, height * 0.7, -0.8, 0.6, 0.3);
+
+
+		//--------------------------RANDOM PARAMETERS---------------------------
 
 		//balls[0] = new Ball(width / 3, height * b1Ry, b1Rvx, b1Rvy, b1Rr);
 		//balls[1] = new Ball(2 * width / 3, height * b2Ry, -1*b2Rvx, b2Rvy, b2Rr);
-
+		
+		//--------------------------------------------------------------------
 		
 		this.ballColliding = false;
 
@@ -194,8 +198,8 @@ class Model {
 		double m1 = balls[bActive].mass;
 		double m2 = balls[bNext].mass;
 		
-		double deltaX = (balls[0].x - balls[1].x);
-		double deltaY = (balls[0].y - balls[1].y);
+		double deltaX = (balls[bActive].x - balls[bNext].x);
+		double deltaY = (balls[bActive].y - balls[bNext].y);
 		
 		double rotAngle = Math.atan(deltaY/deltaX);
 
