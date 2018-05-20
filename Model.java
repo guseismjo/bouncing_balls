@@ -12,6 +12,10 @@ package bouncing_balls;
  */
 
 import java.util.Random;
+import java.util.Scanner;
+import java.io.IOException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 
 class Model {
 
@@ -62,19 +66,28 @@ class Model {
 		
 
 		balls = new Ball[2];
+
+		Scanner keyboard = new Scanner(System.in);
+		System.out.println("1: pre");
+		System.out.println("else: random");
+		int myint = keyboard.nextInt();
 		
-		balls[0] = new Ball(width / 3, height * 0.7, 0.7, 0.6, 0.3);
-		balls[1] = new Ball(2 * width / 3, height * 0.7, -0.8, 0.6, 0.3);
-		//balls[2] = new Ball(2 * width / 4, height * 0.7, -0.8, 0.6, 0.3);
+		if(myint == 1){
+			balls[0] = new Ball(width / 3, height * 0.7, 0.7, 0.6, 0.3);
+			balls[1] = new Ball(2 * width / 3, height * 0.7, -0.8, 0.6, 0.3);
+		}else{
 
 
 		//--------------------------RANDOM PARAMETERS---------------------------
 
-		//balls[0] = new Ball(width / 3, height * b1Ry, b1Rvx, b1Rvy, b1Rr);
-		//balls[1] = new Ball(2 * width / 3, height * b2Ry, -1*b2Rvx, b2Rvy, b2Rr);
+		balls[0] = new Ball(width / 3, height * b1Ry, b1Rvx, b1Rvy*b1Rr, b1Rr);
+		balls[1] = new Ball(2 * width / 3, height * b2Ry, -1*b2Rvx, b2Rvy*b2Rr, b2Rr/2);
 		
 		//--------------------------------------------------------------------
 		
+		}
+		
+
 		this.ballColliding = false;
 
 		this.frame = 0;
@@ -85,23 +98,21 @@ class Model {
 	void step(double deltaT) {
 		// TODO this method implements one step of simulation with a step deltaT
 
-		//System.out.println(deltaT);
-
 		this.frame++;
 
-		if((checkNOCollisionBalls())){		//b.x <= b.radius || b.x >= areaWidth - b.radius) && (!(b.y < b.radius || b.y > areaHeight - b.radius))
+		if((checkNOCollisionBalls())){		
 			this.ballColliding = false;	
 		}
 		
 		int i = 0;
 		for (Ball b : balls) {
-			//System.out.println("Ball is out: "+b.ballOut);
+			
 			// detect collision with the border
 			
 			if((b.vx < 0 && b.x < b.radius) || (b.vx > 0 && b.x > areaWidth - b.radius)){
 				b.vx *= -1; // change direction of ball
 				b.ballOut = true;
-			}		//&&!b.ballOut
+			}		
 				
 			if((b.vy <= 0 && b.y <= b.radius) || (b.vy >= 0 && b.y >= areaHeight - b.radius)){
 				b.vy *= -1; // change direction of ball
@@ -116,16 +127,11 @@ class Model {
 			b.vy = gravityChange(deltaT, b.vy, b.y);		
 			b.y += deltaT * b.vy;
 			
-/*
-			if(b.ballOut){
-				b.vy *= -1;	
-			}
-*/
+
 			// compute new position according to the speed of the ball
 			
 
-			//System.out.println("Ball y pos: "+b.y);
-
+			
 			int next = (i+1)%2;
 			calcDistance();
 			
@@ -135,33 +141,15 @@ class Model {
 			System.out.println("BallsCollison: " + (!this.ballColliding && checkCollisionBalls()));
 
 			if(checkCollisionBalls() && !this.ballColliding){
-				//System.out.println("Yes");
+
 				this.ballColliding = true;
 				momentumFunc(i,next,deltaT);
-				//b.x += deltaT * b.vx;
-				//System.out.println("COLLISION when:" );
-				//System.out.println(this.ballsDistance);
+
 			}
-
-			
-			
-
-			//staticBall(b);
-			
 			
 
 		
 		}
-
-
-			
-/*
-		if(checkCollisionBalls()){
-			balls[0].vy *= -1;
-			balls[1].vy *= -1;
-
-		}
-*/
 
 
 	}
@@ -205,17 +193,12 @@ class Model {
 
 		balls[bActive].rotate(-1*rotAngle);
 		balls[bNext].rotate(-1*rotAngle);
-		
-		//balls[bActive].vx = ((m1*u1 - m2*u1 + 2*m2*u2) / (m1+m2))*-1;	//v1
-		//balls[bNext].vx = ((2*m1*u1 - m1*u2 + m2*u2) / (m1+m2));		//v2
 
  		double I = balls[bActive].mass*balls[bActive].vx+balls[bNext].mass*balls[bNext].vx;
   		double R = -(balls[bNext].vx-balls[bActive].vx);    
 
   		balls[bActive].vx = (I-R*balls[bNext].mass) / (balls[bActive].mass+balls[bNext].mass);
   		balls[bNext].vx = R+balls[bActive].vx;
-
-  		//balls[bActive].x += deltaT*balls[bActive].vx;	
 
 		//System.out.println((m1*balls[bActive].vx*balls[bActive].vx)/2 + (m2*balls[bNext].vx*balls[bNext].vx)/2 == (m1*u1*u1)/2 + (m2*u2*u2)/2);
 
@@ -247,27 +230,21 @@ class Model {
 	}
 	
 	private double gravityChange(double deltaT, double vy, double y){
-		//System.out.println("DeltaT: "+deltaT);
-		double vnew = vy - (9.82*deltaT*y);
-		return vnew;
+		
+			double vnew1 = vy - (9.82*deltaT*y);
+			return vnew1;
+				
 	}
 
 
 	private static double randNum(){
-    	double rangeMin = 0.3f;
-    	double rangeMax = 0.7f;
+    	double rangeMin = 0.1f;
+    	double rangeMax = 0.5f;
     	Random r = new Random();
     	double createdRanNum = rangeMin + (rangeMax - rangeMin) * r.nextDouble();
     	return(createdRanNum);
 	}
-/*
-	private void staticBall(Ball b){
-		if(b.vx == 0.0 && b.vy == 0.0){
-			b.x *= b.x;
-			b.y *= b.y;
-		}
-	}
-*/
+
 	/**
 	 * Simple inner class describing balls.
 	 */
@@ -279,7 +256,7 @@ class Model {
 			this.vx = vx;
 			this.vy = vy;
 			this.radius = r;
-			this.mass = r*10;
+			this.mass = r/100;
 			this.ballOut = false;
 			
 			this.r = Math.sqrt(this.vx*this.vx+this.vy*this.vy);
@@ -311,19 +288,5 @@ class Model {
 			polarToRect();
 		}
 	}
-	/*
-	class Point {
-		
-		Point(double x, double y, double angle) {
-			this.x = x;
-			this.y = y;
-			this.r = Math.sqrt(x*x+y*y);
-			this.angle = angle;
-
-		}
-		
-		double x, y, r, angle;
-
-	}
-	*/
+	
 }
