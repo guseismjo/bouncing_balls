@@ -43,6 +43,7 @@ class Model {
 	boolean ballColliding;
 
 	int frame;
+	int inballCounter;
 
 	Model(double width, double height) {
 		areaWidth = width;
@@ -80,8 +81,8 @@ class Model {
 
 		//--------------------------RANDOM PARAMETERS---------------------------
 
-		balls[0] = new Ball(width / 3, height * b1Ry, b1Rvx, b1Rvy*b1Rr, b1Rr);
-		balls[1] = new Ball(2 * width / 3, height * b2Ry, -1*b2Rvx, b2Rvy*b2Rr, b2Rr/2);
+		balls[0] = new Ball(width / 3, height / 1.5, b1Rvx, b1Rvy, b1Rr);
+		balls[1] = new Ball(2 * width / 3, height / 1.5, -1*b2Rvx, b2Rvy, b2Rr/2);
 		
 		//--------------------------------------------------------------------
 		
@@ -91,6 +92,8 @@ class Model {
 		this.ballColliding = false;
 
 		this.frame = 0;
+
+		this.inballCounter = 0;
 	
 
 	}
@@ -102,6 +105,7 @@ class Model {
 
 		if((checkNOCollisionBalls())){		
 			this.ballColliding = false;	
+			this.inballCounter = 0;
 		}
 		
 		int i = 0;
@@ -141,16 +145,25 @@ class Model {
 			System.out.println("BallsCollison: " + (!this.ballColliding && checkCollisionBalls()));
 
 			if(checkCollisionBalls() && !this.ballColliding){
-
+				this.inballCounter++;
 				this.ballColliding = true;
 				momentumFunc(i,next,deltaT);
 
 			}
+			ballStuck(i,next,deltaT);
 			
 
 		
 		}
 
+
+	}
+
+	private void ballStuck(int bActive, int bNext, double deltaT){
+
+		if(this.inballCounter > 1){
+			momentumFunc(bActive,bNext,deltaT);
+		}
 
 	}
 	
@@ -205,6 +218,11 @@ class Model {
 		balls[bActive].rotate(rotAngle);
 		balls[bNext].rotate(rotAngle);
 
+		double tmp = balls[bActive].radius;
+		//balls[bActive].radius = balls[bNext].radius;
+		//balls[bNext].radius = tmp;
+		balls[bNext].radius /= 1.01;
+
 
 
 	}
@@ -256,7 +274,7 @@ class Model {
 			this.vx = vx;
 			this.vy = vy;
 			this.radius = r;
-			this.mass = r/100;
+			this.mass = r*r;
 			this.ballOut = false;
 			
 			this.r = Math.sqrt(this.vx*this.vx+this.vy*this.vy);
